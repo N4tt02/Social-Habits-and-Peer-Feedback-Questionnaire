@@ -10,8 +10,8 @@
    RESET & GENERAL
 ======================================================================= */
 * { margin:0; padding:0; box-sizing:border-box; }
-html, body { height:100%; width:100%; overflow:hidden; font-family:'Arial',sans-serif; }
-body { background:#f4f4f4; transition: background 0.8s ease; }
+html, body { height:100%; width:100%; font-family:'Arial',sans-serif; }
+body { background:#f4f4f4; transition: background 0.8s ease; overflow-x:hidden; }
 body.red-mode { background:#c4001a; }
 
 /* =======================================================================
@@ -38,10 +38,10 @@ input:focus { border-color:#ff5c73; box-shadow:0 0 0 4px rgba(255,92,115,0.15); 
 .typing-wrap { 
   position:absolute;
   left:50%; 
-  top:10%; 
+  top:8%; 
   transform:translateX(-50%);
   width:min(90vw,760px); 
-  max-height:70vh;
+  max-height:65vh;
   overflow-y:auto; 
   text-align:center; 
   z-index:4; 
@@ -65,13 +65,13 @@ input:focus { border-color:#ff5c73; box-shadow:0 0 0 4px rgba(255,92,115,0.15); 
 /* =======================================================================
    HEART CHOICES
 ======================================================================= */
-.choices { position:fixed; inset:0; z-index:6; pointer-events:none; }
-.heart-choice { position:absolute; border:none; background:transparent; cursor:pointer; pointer-events:auto; color:#ffefef; text-shadow:0 4px 12px rgba(0,0,0,0.28); transform:translate(-50%,-50%) scale(0.2); opacity:0; transition: all 0.8s ease; }
+.choices { position:fixed; inset:0; z-index:6; pointer-events:none; display:flex; justify-content:center; align-items:center; gap:40px; }
+.heart-choice { border:none; background:transparent; cursor:pointer; pointer-events:auto; color:#ffefef; text-shadow:0 4px 12px rgba(0,0,0,0.28); transform:scale(0.2); opacity:0; transition: all 0.8s ease; }
 .heart-choice.circle { border-radius:50%; font-size:90px; }
 .heart-choice.square { border-radius:14px; font-size:120px; }
-.heart-choice.show { opacity:1; transform:translate(-50%,-50%) scale(1); }
+.heart-choice.show { opacity:1; transform:scale(1); }
 .heart-choice.clicked { animation:pop 0.45s ease forwards; }
-@keyframes pop {0%{transform:translate(-50%,-50%) scale(1);}50%{transform:translate(-50%,-50%) scale(1.22);}100%{transform:translate(-50%,-50%) scale(1);}}
+@keyframes pop {0%{transform:scale(1);}50%{transform:scale(1.22);}100%{transform:scale(1);}}
 
 /* =======================================================================
    CONFESSION MESSAGE
@@ -111,7 +111,8 @@ input:focus { border-color:#ff5c73; box-shadow:0 0 0 4px rgba(255,92,115,0.15); 
   .heart-choice { font-size:80px; }
   .heart-choice.square { font-size:100px; }
   .message-card { width:90vw; padding:16px; }
-  .typing-wrap { top:8%; max-height:60vh; padding:6px; }
+  .typing-wrap { top:5%; max-height:60vh; padding:6px; }
+  .choices { gap:20px; }
 }
 </style>
 </head>
@@ -162,7 +163,7 @@ let spawnRate = 120;
 // --- HEARTS DATA
 const heartsData = [
   {label:"❤", type:"circle", title:"I", message:"Hello po, sana nagustuhan n’yo yung simpleng pakulo ko ngayon. ..."},
-  {label:"❤", type:"square", title:"APPLICATION RESUME ", message:"Name: Francis De La Torre\nPosition Applied For: Potential Boyfriend..."},
+  {label:"❤", type:"square", title:"APPLICATION RESUME", message:"Name: Francis De La Torre\nPosition Applied For: Potential Boyfriend..."},
   {label:"❤", type:"circle", title:"U", message:"Medyo natatakot po ako na baka mali ang timing ko..."}
 ];
 
@@ -184,7 +185,7 @@ function showTypingSequence(){
   document.body.classList.add("red-mode");
   startScreen.classList.add("hidden");
   typingWrap.classList.add("show");
-  typeMessage("Hello po...\n Sorry po sa scam hehehe \n wala po talagang survey... \n naisip ko lang pong mag gawa po ng site \n kasi nahihiya po ako hahaha \n uhm... \n So... \n Pili lang po kayo sa tatlo...", typingText, 70, ()=>{
+  typeMessage("Hello po...\nSorry po sa scam hehehe \nwala po talagang survey... \nnaisip ko lang pong mag gawa po ng site \nkasi nahihiya po ako hahaha \nuhm... \nSo... \nPili lang po kayo sa tatlo...", typingText, 70, ()=>{
     setTimeout(()=>{
       typingWrap.classList.add("move-up");
       setTimeout(showHearts, 600);
@@ -196,16 +197,12 @@ function showHearts(){
   choicesLayer.classList.remove("hidden");
   choicesLayer.innerHTML="";
   
-  heartsData.forEach((item,index)=>{
+  heartsData.forEach((item)=>{
     const heart = document.createElement("button");
     heart.className="heart-choice "+item.type;
     heart.innerHTML=item.label;
     heart.title=item.title;
-
-    // Use percentage positions for responsiveness
-    const spacing = 25; // spacing between hearts
-    heart.style.left = `${40 + index*spacing}%`;
-    heart.style.top = `50%`;
+    choicesLayer.appendChild(heart);
 
     setTimeout(()=>heart.classList.add("show"),50);
 
@@ -215,8 +212,6 @@ function showHearts(){
       spawnRate = Math.max(100, spawnRate - 20);
       showConfession(item.title, item.message);
     });
-
-    choicesLayer.appendChild(heart);
   });
 }
 
@@ -245,7 +240,6 @@ nextBtn.addEventListener("click",()=>{
   const name=nameInput.value.trim();
   if(!name){ nameInput.focus(); return; }
 
-  // Play background music
   bgMusic.play().catch(err => console.log("Autoplay blocked:", err));
 
   showTypingSequence();
