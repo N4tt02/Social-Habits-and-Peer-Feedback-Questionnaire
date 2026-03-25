@@ -3,90 +3,322 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="Rose.png">
 <title>Social Habits and Peer Feedback Questionnaire</title>
 <style>
-body { margin:0; font-family:Arial,sans-serif; background:#f4f4f4; overflow-x:hidden; transition:background 0.8s ease; }
+/* =======================================================================
+   RESET & GENERAL
+======================================================================= */
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; width:100%; font-family:'Arial',sans-serif; }
+body { background:#f4f4f4; transition: background 0.8s ease; overflow-x:hidden; }
 body.red-mode { background:#c4001a; }
 
+/* =======================================================================
+   SCREEN & CARD
+======================================================================= */
 .screen { position:fixed; inset:0; display:flex; justify-content:center; align-items:center; }
 .card { background: rgba(255,255,255,0.97); border-radius:25px; box-shadow:0 12px 35px rgba(0,0,0,0.25); text-align:center; padding:40px; width:min(560px,90vw); transition: transform 1s ease, opacity 1s ease; }
 .card.small { min-height:220px; }
 
 .title { font-size:2rem; color:#222; margin-bottom:15px; }
 .subtitle { font-size:1rem; color:#555; margin-bottom:25px; }
-input { width:100%; padding:15px; font-size:1.05rem; border:1.5px solid #ccc; border-radius:14px; margin-bottom:18px; outline:none; }
+input { width:100%; padding:15px 18px; font-size:1.05rem; border:1.5px solid #ccc; border-radius:14px; margin-bottom:18px; outline:none; }
 input:focus { border-color:#ff5c73; box-shadow:0 0 0 4px rgba(255,92,115,0.15); }
 
-.btn { padding:16px; width:100%; border:none; border-radius:14px; font-size:1.05rem; cursor:pointer; color:white; background:linear-gradient(135deg,#ff4d6d,#b8002a); transition:0.25s; }
+.btn { padding:16px 18px; width:100%; border:none; border-radius:14px; font-size:1.05rem; cursor:pointer; color:white; background:linear-gradient(135deg,#ff4d6d,#b8002a); transition:0.25s; }
 .btn:hover { filter:brightness(1.05); }
 .btn:active { transform:scale(0.98); }
 
-.typing-wrap { position:absolute; left:50%; top:48%; transform:translate(-50%,-50%); width:min(760px,94vw); text-align:center; z-index:4; opacity:0; pointer-events:none; transition: transform 1s ease, opacity 1s ease; }
+.hidden { display:none !important; }
+
+/* =======================================================================
+   TYPING EFFECT
+======================================================================= */
+.typing-wrap {
+  position:absolute;
+  left:50%;
+  top:48%;
+  transform:translate(-50%,-50%);
+  width:min(760px,94vw);
+  text-align:center;
+  z-index:4;
+  opacity:0;
+  pointer-events:none;
+  transition: transform 1s ease, opacity 1s ease;
+}
 .typing-wrap.show { opacity:1; }
 .typing-wrap.move-up { transform:translate(-50%,-165%); opacity:0.15; }
-.typing-text { font-size:clamp(1.3rem,2.8vw,2.3rem); color:white; text-shadow:0 3px 12px rgba(0,0,0,0.25); min-height:3rem; white-space:pre-wrap; letter-spacing:0.3px; transition: opacity 0.8s ease; }
 
-.floating-heart { position:fixed; pointer-events:none; z-index:12; font-size:22px; color:white; text-shadow:0 0 10px rgba(255,255,255,0.7); animation:floatUp linear forwards; user-select:none; }
-@keyframes floatUp { from{transform:translateY(0) scale(0.8);opacity:1;} to{transform:translateY(-220px) scale(1.5);opacity:0;} }
+.typing-text {
+  font-size:clamp(1.3rem,2.8vw,2.3rem);
+  color:white;
+  text-shadow:0 3px 12px rgba(0,0,0,0.25);
+  min-height:3rem;
+  white-space:pre-wrap;
+  letter-spacing:0.3px;
+  transition: opacity 0.8s ease;
+}
 
-.message-card { position:fixed; left:50%; bottom:28px; transform:translateX(-50%) translateY(30px); width:min(720px,94vw); background:rgba(255,255,255,0.96); color:#222; border-radius:22px; padding:24px; box-shadow:0 12px 35px rgba(0,0,0,0.25); z-index:20; opacity:0; pointer-events:none; transition: all 0.45s ease; overflow:hidden; }
-.message-card.show { opacity:1; pointer-events:auto; transform:translateX(-50%) translateY(0); }
-.message-title { color:#b8002a; font-size:1.35rem; margin-bottom:10px; }
-.message-text { font-size:1.1rem; line-height:1.7; max-height:200px; overflow-y:auto; white-space:pre-wrap; }
+/* =======================================================================
+   HEART CHOICES
+======================================================================= */
+.choices {
+  position:fixed;
+  inset:0;
+  z-index:6;
+  pointer-events:none;
+}
 
-/* mobile */
-@media(max-width:600px){.card{width:90%;padding:30px}.title{font-size:1.6rem}.subtitle{font-size:.9rem}input{font-size:1rem;padding:12px}.btn{font-size:1rem;padding:14px}.typing-wrap{width:90%;font-size:clamp(1rem,2.2vw,1.6rem)}.message-card{width:90%;bottom:20px;padding:20px}}
+/* No visible container/background anymore */
+.heart-choice {
+  position:absolute;
+  border:none;
+  background:transparent;
+  cursor:pointer;
+  pointer-events:auto;
+  color:#fff;
+  text-shadow:0 0 12px rgba(255,255,255,0.85), 0 0 24px rgba(255,255,255,0.35);
+  transform:translate(-50%,-50%) scale(0.2);
+  opacity:0;
+  transition: all 0.8s ease;
+  padding:0;
+  line-height:1;
+  width:auto;
+  height:auto;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  user-select:none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.heart-choice.circle { font-size:120px; }
+.heart-choice.square { font-size:112px; }
+
+.heart-choice.show { opacity:1; transform:translate(-50%,-50%) scale(1); }
+.heart-choice.clicked { animation:pop 0.45s ease forwards; }
+
+@keyframes pop {
+  0%{transform:translate(-50%,-50%) scale(1);}
+  50%{transform:translate(-50%,-50%) scale(1.22);}
+  100%{transform:translate(-50%,-50%) scale(1);}
+}
+
+/* =======================================================================
+   CONFESSION MESSAGE
+======================================================================= */
+.message-card {
+  position:fixed;
+  left:50%;
+  bottom:28px;
+  transform:translateX(-50%) translateY(30px);
+  width:min(720px,94vw);
+  background:rgba(255,255,255,0.96);
+  color:#222;
+  border-radius:22px;
+  padding:24px;
+  box-shadow:0 12px 35px rgba(0,0,0,0.25);
+  z-index:20;
+  opacity:0;
+  pointer-events:none;
+  transition: all 0.45s ease;
+  overflow:hidden;
+}
+
+.message-card.show {
+  opacity:1;
+  pointer-events:auto;
+  transform:translateX(-50%) translateY(0);
+}
+
+.message-title {
+  color:#b8002a;
+  font-size:1.35rem;
+  margin-bottom:10px;
+}
+
+.message-text {
+  font-size:1.1rem;
+  line-height:1.7;
+  min-height:3.2rem;
+  overflow-y:auto;
+  max-height:200px;
+  white-space:pre-wrap;
+  scroll-behavior:smooth;
+}
+
+/* =======================================================================
+   FLOATING WHITE HEARTS
+======================================================================= */
+.floating-heart {
+  position:fixed;
+  pointer-events:none;
+  z-index:12;
+  font-size:22px;
+  color:white;
+  text-shadow:0 0 10px rgba(255,255,255,0.7);
+  animation:floatUp linear forwards;
+  user-select:none;
+}
+@keyframes floatUp {
+  from{transform:translateY(0) scale(0.8);opacity:1;}
+  to{transform:translateY(-220px) scale(1.5);opacity:0;}
+}
+
+/* =======================================================================
+   EXTRA FLAIR
+======================================================================= */
+.spark {
+  position:absolute;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:white;
+  pointer-events:none;
+}
+
+/* ===============================
+   MOBILE RESPONSIVENESS
+=============================== */
+@media (max-width: 600px) {
+  .card { width: 90%; padding: 30px; }
+  .title { font-size: 1.6rem; }
+  .subtitle { font-size: 0.9rem; }
+  input { font-size: 1rem; padding: 12px 14px; }
+  .btn { font-size: 1rem; padding: 14px; }
+  .heart-choice.circle { font-size: 80px; }
+  .heart-choice.square { font-size: 74px; }
+  .typing-wrap { width:90%; font-size:clamp(1rem,2.2vw,1.6rem); }
+  .message-card { width:90%; bottom:20px; padding:20px; }
+}
 </style>
 </head>
 <body>
-<audio id="bgMusic" src="a-sky-full-of-stars-piano-cover (1).mp3" loop></audio>
+  <!-- BACKGROUND MUSIC -->
+  <audio id="bgMusic" src="a-sky-full-of-stars-piano-cover (1).mp3" loop></audio>
 
-<div class="screen" id="startScreen">
-  <div class="card small">
-    <div class="title">Social Habits and Peer Feedback Questionnaire</div>
-    <input type="text" id="nameInput" placeholder="Please enter your name here..." />
-    <button class="btn" id="nextBtn">Next</button>
-    <div class="subtitle">Any information you provide will be held in utmost confidentiality.</div>
+  <!-- NAME INPUT -->
+  <div class="screen" id="startScreen">
+    <div class="card small" id="nameCard">
+      <div class="title">Social Habits and Peer Feedback Questionnaire</div>
+      <input type="text" id="nameInput" placeholder="Please enter your name here..." />
+      <button class="btn" id="nextBtn">Next</button>
+      <div class="subtitle"></div>
+      <div class="subtitle">Any information you provide will be held in utmost confidentiality.</div>
+    </div>
   </div>
-</div>
 
-<div class="typing-wrap" id="typingWrap"><div class="typing-text" id="typingText"></div></div>
+  <!-- TYPING EFFECT -->
+  <div class="typing-wrap" id="typingWrap">
+    <div class="typing-text" id="typingText"></div>
+  </div>
 
-<div class="message-card" id="messageCard">
-  <h3 class="message-title" id="messageTitle"></h3>
-  <div class="message-text" id="messageText"></div>
-</div>
+  <!-- HEART CHOICES -->
+  <div class="choices hidden" id="choicesLayer"></div>
+
+  <!-- CONFESSION MESSAGE -->
+  <div class="message-card" id="messageCard">
+    <h3 class="message-title" id="messageTitle">Message</h3>
+    <p class="message-text" id="messageText"></p>
+  </div>
 
 <script>
-const nameInput=document.getElementById("nameInput");
-const nextBtn=document.getElementById("nextBtn");
-const startScreen=document.getElementById("startScreen");
-const typingWrap=document.getElementById("typingWrap");
-const typingText=document.getElementById("typingText");
-const messageCard=document.getElementById("messageCard");
-const messageTitle=document.getElementById("messageTitle");
-const messageText=document.getElementById("messageText");
-const bgMusic=document.getElementById("bgMusic");
+const nameInput = document.getElementById("nameInput");
+const nextBtn = document.getElementById("nextBtn");
+const startScreen = document.getElementById("startScreen");
+const typingWrap = document.getElementById("typingWrap");
+const typingText = document.getElementById("typingText");
+const choicesLayer = document.getElementById("choicesLayer");
+const messageCard = document.getElementById("messageCard");
+const messageTitle = document.getElementById("messageTitle");
+const messageText = document.getElementById("messageText");
+const bgMusic = document.getElementById("bgMusic");
 
-let floatingInterval=null;
-let spawnRate=120;
+let floatingInterval = null;
+let spawnRate = 120;
 let typingTimer;
 
+// --- HEARTS DATA
 const heartsData = [
-  {label:"❤", type:"circle", title:"I", message:"Hello po, sana nagustuhan n’yo yung simpleng pakulo ko ngayon. \n Sana rin po kahit papaano ay na-surprise ko kayo o napangiti man lang hehe. \n Sa totoo lang po, kinakabahan ako ngayon at medyo nagdadalawang-isip kung itutuloy ko ito, kasi first time kong magtapat sa ganitong paraan. Pero naisip ko rin na kung hindi ko ito gagawin ngayon, baka pagsisihan ko sa huli. \n Tapos ang unang impression ko po sa inyo ay parang 'I'm way out of your league', kaya po ako nahihiya. Kahit gusto kong makipag-usap o mag-first move, hindi ko po ginagawa kasi ayaw ko pong mag-assume—lalo na po at hindi po ako sigurado kung ako po ba yung nirereplyan n’yo sa notes sa Instagram. hehe \n Pero ngayon, gusto ko pong maging brave at maging honest. Na... If you'll allow it... at kung available po kayo... \n pwede n'yo po ba akong payagan na ikaw po ay aking makilala? \n ...sa ibang salita po... \n ay... \n pwede po ba... \n kitang \n ...ligawan?" },
-  {label:"❤", type:"square", title:"APPLICATION RESUME ", message:"\n \n Name: Francis De La Torre \n Position Applied For: Potential Boyfriend (Full-Time, Long-Term Preferred) \n OBJECTIVE: \n To genuinely care for, support, and make you smile while building something healthy and meaningful together. \n \n QUALIFICATIONS (GREEN FLAGS): \n ✔ Good listener (will remember the little things you say) \n ✔ Loyal (+ no mixed signals) \n ✔ Communicates honestly (even when it’s uncomfortable) \n ✔ Respects your time, space, and boundaries \n ✔ Can make you laugh (or at least tries very hard) \n ✔ Emotionally aware (not perfect, but willing to grow) \n ✔ Supportive of your goals, studies, and dreams \n ✔ Can handle deep talks and small talks \n \n AREAS FOR IMPROVEMENT (WORKING ON IT): \n ⚠ Sometimes overthinks \n ⚠ Might get shy or awkward at first \n ⚠ Can be stubborn occasionally \n ⚠ Needs reassurance sometimes (but communicates it)\n ⚠ May reply late when busy—but won’t ignore you\n\n SKILLS:\n • Quality time specialist\n • Chatting\n • Giving attention"},
-  {label:"❤", type:"circle", title:"U", message:"Medyo natatakot po ako na baka mali ang timing ko o baka po sobrang busy n'yo ngayon, at baka rin po na sobra ko naman pong assuming... \n pero mas natakot po ako sa thought na baka hindi ko masabi ito at pagsisihan ko sa huli. Kaya ngayon po, gusto ko lang maging sincere dun po sa 'I wan't to know you better' bukod po sa statement po na 'gusto kita.' \n tapos po hihingi narin po ako ng sorry kung hindi po agad ako makakapag reply gawa po ng wala pa po akong tulog hahahaha, \n medyo natagalan po ako sa pag code kagabi e huhu."}
+  {
+    label:"❤",
+    type:"circle",
+    title:"I",
+    message:`Hello po, sana nagustuhan n’yo yung simpleng pakulo ko ngayon. 
+Sana rin po kahit papaano ay na-surprise ko kayo o napangiti man lang hehe. 
+Sa totoo lang po, kinakabahan ako ngayon at medyo nagdadalawang-isip kung itutuloy ko ito, kasi first time kong magtapat sa ganitong paraan. Pero naisip ko rin na kung hindi ko ito gagawin ngayon, baka pagsisihan ko sa huli. 
+Tapos ang unang impression ko po sa inyo ay parang 'I'm way out of your league', kaya po ako nahihiya. Kahit gusto kong makipag-usap o mag-first move, hindi ko po ginagawa kasi ayaw ko pong mag-assume—lalo na po at hindi po ako sigurado kung ako po ba yung nirereplyan n’yo sa notes sa Instagram. hehe 
+Pero ngayon, gusto ko pong maging brave at maging honest. Na... If you'll allow it... at kung available po kayo... 
+pwede n'yo po ba akong payagan na ikaw po ay aking makilala? 
+...sa ibang salita po... 
+ay... 
+pwede po ba... 
+kitang 
+...ligawan?`
+  },
+  {
+    label:"❤",
+    type:"square",
+    title:"APPLICATION RESUME",
+    message:`Name: Francis De La Torre
+
+Position Applied For: Potential Boyfriend (Full-Time, Long-Term Preferred)
+
+OBJECTIVE:
+To genuinely care for, support, and make you smile while building something healthy and meaningful together.
+
+QUALIFICATIONS (GREEN FLAGS):
+✔ Good listener (will remember the little things you say)
+✔ Loyal (+ no mixed signals)
+✔ Communicates honestly (even when it’s uncomfortable)
+✔ Respects your time, space, and boundaries
+✔ Can make you laugh (or at least tries very hard)
+✔ Emotionally aware (not perfect, but willing to grow)
+✔ Supportive of your goals, studies, and dreams
+✔ Can handle deep talks and small talks
+
+AREAS FOR IMPROVEMENT (WORKING ON IT):
+⚠ Sometimes overthinks
+⚠ Might get shy or awkward at first
+⚠ Can be stubborn occasionally
+⚠ Needs reassurance sometimes (but communicates it)
+⚠ May reply late when busy—but won’t ignore you
+
+SKILLS:
+• Quality time specialist
+• Chatting
+• Giving attention`
+  },
+  {
+    label:"❤",
+    type:"circle",
+    title:"U",
+    message:`Medyo natatakot po ako na baka mali ang timing ko o baka po sobrang busy n’yo ngayon, at baka rin po na sobra ko naman pong assuming... 
+pero mas natakot po ako sa thought na baka hindi ko masabi ito at pagsisihan ko sa huli. Kaya ngayon po, gusto ko lang maging sincere dun po sa 'I want to know you better' bukod po sa statement po na 'gusto kita.' 
+Tapos po hihingi na rin po ako ng sorry kung hindi po agad ako makakapag reply gawa po ng wala pa po akong tulog hahahaha, 
+medyo natagalan po ako sa pag code kagabi e huhu.`
+  }
 ];
 
-function typeMessage(text,el,speed=50,done){
-  el.textContent="";
-  let i=0;
+function typeMessage(text, el, speed=150, done){
+  el.textContent = "";
+  let i = 0;
   clearInterval(typingTimer);
-  typingTimer=setInterval(()=>{
-    el.textContent+=text[i]; i++;
-    el.scrollTop=el.scrollHeight; // autoscroll
-    if(i>=text.length){ clearInterval(typingTimer); if(done) done(); }
-  },speed);
+
+  typingTimer = setInterval(() => {
+    el.textContent += text[i];
+    i++;
+
+    // Auto-scroll while typing for long messages
+    el.scrollTop = el.scrollHeight;
+
+    if(i >= text.length){
+      clearInterval(typingTimer);
+      el.scrollTop = el.scrollHeight;
+      if(done) done();
+    }
+  }, speed);
 }
 
 function showTypingSequence(){
@@ -94,57 +326,88 @@ function showTypingSequence(){
   startScreen.classList.add("hidden");
   typingWrap.classList.add("show");
 
-  typeMessage("Hello po...\nSorry po sa scam hehehe\nwala po talagang survey...\nnaisip ko lang pong mag gawa po ng site\nkasi nahihiya po ako hahaha\nuhm...\nSo...\nPili lang po kayo sa tatlo...",typingText,70,()=>{
-    typingWrap.classList.add("move-up");
-    setTimeout(showHearts,500);
-  });
+  typeMessage(
+    "Hello po...\nSorry po sa scam hehehe\nwala po talagang survey...\nnaisip ko lang pong mag gawa po ng site\nkasi nahihiya po ako hahaha\nuhm...\nSo...\nPili lang po kayo sa tatlo...",
+    typingText,
+    70,
+    () => {
+      typingWrap.classList.add("move-up");
+      setTimeout(() => {
+        showHearts();
+      }, 700);
+    }
+  );
 }
 
 function showHearts(){
-  heartsData.forEach((item,index)=>{
-    const heart=document.createElement("div");
-    heart.className="floating-heart";
-    heart.textContent=item.label;
-    heart.style.left=`${50 + (index-1)*10}vw`;
-    heart.style.top="50%";
-    heart.style.fontSize="120px";
-    document.body.appendChild(heart);
+  choicesLayer.classList.remove("hidden");
+  choicesLayer.innerHTML = "";
 
-    heart.addEventListener("click",()=>{
+  const viewportW = window.innerWidth;
+  const viewportH = window.innerHeight;
+  const heartSpacing = Math.min(160, viewportW / (heartsData.length + 1));
+
+  heartsData.forEach((item, index) => {
+    const heart = document.createElement("button");
+    heart.className = "heart-choice " + item.type;
+    heart.innerHTML = item.label;
+    heart.title = item.title;
+
+    heart.style.left = `${viewportW/2 - heartSpacing*(heartsData.length-1)/2 + index*heartSpacing}px`;
+    heart.style.top = `${viewportH/2}px`;
+
+    setTimeout(() => heart.classList.add("show"), 50);
+
+    heart.addEventListener("click", () => {
+      heart.classList.add("clicked");
       spawnWhiteHeartsContinuously();
-      showConfession(item.title,item.message);
+      spawnRate = Math.max(100, spawnRate - 20);
+      showConfession(item.title, item.message);
     });
+
+    choicesLayer.appendChild(heart);
   });
 }
 
-function showConfession(title,message){
-  messageTitle.textContent=title;
+function showConfession(title, message){
+  messageTitle.textContent = title;
   messageCard.classList.add("show");
-  typeMessage(message,messageText,35);
+  messageText.style.overflowY = "auto";
+  messageText.style.maxHeight = "200px";
+  messageText.style.whiteSpace = "pre-wrap";
+  typeMessage(message, messageText, 35);
 }
 
 function spawnWhiteHeartsContinuously(){
   if(floatingInterval) return;
-  floatingInterval=setInterval(()=>{
-    const h=document.createElement("div");
-    h.className="floating-heart";
-    h.textContent=Math.random()>0.5?"❤":"♡";
-    h.style.left=`${Math.random()*100}vw`;
-    h.style.top=`${Math.random()*100}vh`;
-    h.style.fontSize=`${14+Math.random()*28}px`;
-    h.style.animationDuration=`${1.8+Math.random()*2}s`;
+
+  floatingInterval = setInterval(() => {
+    const h = document.createElement("div");
+    h.className = "floating-heart";
+    h.textContent = Math.random() > 0.5 ? "❤" : "♡";
+    h.style.left = `${Math.random() * window.innerWidth}px`;
+    h.style.top = `${Math.random() * window.innerHeight}px`;
+    h.style.fontSize = `${14 + Math.random() * 28}px`;
+    h.style.animationDuration = `${1.8 + Math.random() * 2}s`;
     document.body.appendChild(h);
-    setTimeout(()=>h.remove(),4000);
-  },spawnRate);
+    setTimeout(() => h.remove(), 4000);
+  }, spawnRate);
 }
 
-nextBtn.addEventListener("click",()=>{
-  if(!nameInput.value.trim()){ nameInput.focus(); return; }
-  bgMusic.play().catch(()=>{});
+nextBtn.addEventListener("click", () => {
+  const name = nameInput.value.trim();
+  if(!name){
+    nameInput.focus();
+    return;
+  }
+
+  bgMusic.play().catch(err => console.log("Autoplay blocked:", err));
   showTypingSequence();
 });
 
-nameInput.addEventListener("keydown",e=>{if(e.key==="Enter") nextBtn.click();});
+nameInput.addEventListener("keydown", (e) => {
+  if(e.key === "Enter") nextBtn.click();
+});
 </script>
 </body>
 </html>
