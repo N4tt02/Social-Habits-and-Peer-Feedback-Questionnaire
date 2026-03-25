@@ -1,390 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" href="Rose.png">
 <title>Social Habits and Peer Feedback Questionnaire</title>
-
 <style>
 /* =======================================================================
    RESET & GENERAL
 ======================================================================= */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html, body {
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-  font-family: Arial, sans-serif;
-}
-
-body {
-  background: #f4f4f4;
-  transition: background 0.8s ease;
-}
-
-body.red-mode {
-  background: #c4001a;
-}
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; width:100%; overflow-x:hidden; font-family:'Arial',sans-serif; }
+body { background:#f4f4f4; transition: background 0.8s ease; }
+body.red-mode { background:#c4001a; }
 
 /* =======================================================================
    SCREEN & CARD
 ======================================================================= */
-.screen {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 16px;
-}
+.screen { position:fixed; inset:0; display:flex; justify-content:center; align-items:center; padding:15px; }
+.card { background: rgba(255,255,255,0.97); border-radius:25px; box-shadow:0 12px 35px rgba(0,0,0,0.25); text-align:center; padding:40px; width:min(560px,90vw); transition: transform 1s ease, opacity 1s ease; }
+.card.small { min-height:220px; }
 
-.card {
-  background: rgba(255, 255, 255, 0.97);
-  border-radius: 25px;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
-  text-align: center;
-  padding: 40px;
-  width: min(560px, 90vw);
-  transition: transform 1s ease, opacity 1s ease;
-}
+.title { font-size:2rem; color:#222; margin-bottom:15px; }
+.subtitle { font-size:1rem; color:#555; margin-bottom:25px; }
+input { width:100%; padding:15px 18px; font-size:1.05rem; border:1.5px solid #ccc; border-radius:14px; margin-bottom:18px; outline:none; }
+input:focus { border-color:#ff5c73; box-shadow:0 0 0 4px rgba(255,92,115,0.15); }
 
-.card.small {
-  min-height: 220px;
-}
+.btn { padding:16px 18px; width:100%; border:none; border-radius:14px; font-size:1.05rem; cursor:pointer; color:white; background:linear-gradient(135deg,#ff4d6d,#b8002a); transition:0.25s; }
+.btn:hover { filter:brightness(1.05); }
+.btn:active { transform:scale(0.98); }
 
-.title {
-  font-size: 2rem;
-  color: #222;
-  margin-bottom: 15px;
-  line-height: 1.2;
-}
-
-.subtitle {
-  font-size: 1rem;
-  color: #555;
-  margin-top: 10px;
-}
-
-input {
-  width: 100%;
-  padding: 15px 18px;
-  font-size: 1.05rem;
-  border: 1.5px solid #ccc;
-  border-radius: 14px;
-  margin-bottom: 18px;
-  outline: none;
-}
-
-input:focus {
-  border-color: #ff5c73;
-  box-shadow: 0 0 0 4px rgba(255, 92, 115, 0.15);
-}
-
-.btn {
-  padding: 16px 18px;
-  width: 100%;
-  border: none;
-  border-radius: 14px;
-  font-size: 1.05rem;
-  cursor: pointer;
-  color: white;
-  background: linear-gradient(135deg, #ff4d6d, #b8002a);
-  transition: 0.25s;
-}
-
-.btn:hover {
-  filter: brightness(1.05);
-}
-
-.btn:active {
-  transform: scale(0.98);
-}
-
-.hidden {
-  display: none !important;
-}
+.hidden { display:none !important; }
 
 /* =======================================================================
    TYPING EFFECT
 ======================================================================= */
-.typing-wrap {
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: min(760px, 94vw);
-  max-height: 42vh;
-  text-align: center;
-  z-index: 4;
-  opacity: 0;
-  pointer-events: none;
-  transition: top 0.9s ease, transform 0.9s ease, opacity 0.9s ease, max-height 0.9s ease;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  padding: 8px 10px;
-}
-
-.typing-wrap.show {
-  opacity: 1;
-}
-
-.typing-wrap.move-up {
-  top: 10vh;
-  transform: translateX(-50%);
-  opacity: 1;
-  max-height: 30vh;
-}
-
-.typing-text {
-  font-size: clamp(1.15rem, 3vw, 2.3rem);
-  color: white;
-  text-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
-  line-height: 1.5;
-  white-space: pre-wrap;
-  letter-spacing: 0.3px;
-  word-break: break-word;
-  text-align: center;
-}
-
-/* custom scrollbar for typing area */
-.typing-wrap::-webkit-scrollbar {
-  width: 6px;
-}
-
-.typing-wrap::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.35);
-  border-radius: 10px;
-}
-
-.typing-wrap::-webkit-scrollbar-track {
-  background: transparent;
-}
+.typing-wrap { position:absolute; left:50%; top:48%; transform:translate(-50%,-50%); width:min(760px,94vw); text-align:center; z-index:4; opacity:0; pointer-events:none; transition: transform 1s ease, opacity 1s ease; }
+.typing-wrap.show { opacity:1; }
+.typing-wrap.move-up { transform:translate(-50%,-165%); opacity:0.15; }
+.typing-text { font-size:clamp(1.3rem,2.8vw,2.3rem); color:white; text-shadow:0 3px 12px rgba(0,0,0,0.25); min-height:3rem; white-space:pre-wrap; letter-spacing:0.3px; }
 
 /* =======================================================================
    HEART CHOICES
 ======================================================================= */
-.choices {
-  position: fixed;
-  inset: 0;
-  z-index: 6;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 22px;
-  flex-wrap: wrap;
-  padding: 20px;
-  pointer-events: none;
-}
+.choices { position:fixed; inset:0; z-index:6; pointer-events:none; }
+.heart-choice { position:absolute; font-size:120px; border:none; background:transparent; cursor:pointer; pointer-events:auto; color:#ffefef; text-shadow:0 4px 12px rgba(0,0,0,0.28); transform:translate(-50%,-50%) scale(0.2); opacity:0; transition: all 0.8s ease; border-radius:50%; display:flex; justify-content:center; align-items:center; padding:8px; text-align:center; }
+.heart-choice.circle { border-radius:50%; font-size:90px; }
+.heart-choice.square { border-radius:14px; font-size:120px; }
+.heart-choice.show { opacity:1; transform:translate(-50%,-50%) scale(1); }
+.heart-choice.clicked { animation:pop 0.45s ease forwards; overflow-y:auto; max-height:220px; }
 
-.heart-choice {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  pointer-events: auto;
-  color: #ffefef;
-  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
-  transform: scale(0.2);
-  opacity: 0;
-  transition: all 0.8s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  user-select: none;
-}
-
-.heart-choice.show {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.heart-choice.clicked {
-  animation: pop 0.45s ease forwards;
-}
-
-.heart-choice.circle {
-  width: 96px;
-  height: 96px;
-  font-size: 3.2rem;
-  border-radius: 50%;
-}
-
-.heart-choice.square {
-  width: 120px;
-  height: 120px;
-  font-size: 4rem;
-  border-radius: 18px;
-}
-
-@keyframes pop {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.22); }
-  100% { transform: scale(1); }
-}
+@keyframes pop {0%{transform:translate(-50%,-50%) scale(1);}50%{transform:translate(-50%,-50%) scale(1.22);}100%{transform:translate(-50%,-50%) scale(1);}}
 
 /* =======================================================================
    CONFESSION MESSAGE
 ======================================================================= */
-.message-card {
-  position: fixed;
-  left: 50%;
-  bottom: 20px;
-  transform: translateX(-50%) translateY(30px);
-  width: min(720px, 94vw);
-  max-height: 34vh;
-  background: rgba(255, 255, 255, 0.96);
-  color: #222;
-  border-radius: 22px;
-  padding: 24px;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
-  z-index: 20;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.45s ease;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.message-card.show {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateX(-50%) translateY(0);
-}
-
-.message-title {
-  color: #b8002a;
-  font-size: 1.35rem;
-  margin-bottom: 10px;
-}
-
-.message-text {
-  font-size: 1.1rem;
-  line-height: 1.7;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
-/* custom scrollbar for message card */
-.message-card::-webkit-scrollbar {
-  width: 6px;
-}
-
-.message-card::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
-}
-
-.message-card::-webkit-scrollbar-track {
-  background: transparent;
-}
+.message-card { position:fixed; left:50%; bottom:28px; transform:translateX(-50%) translateY(30px); width:min(720px,94vw); background:rgba(255,255,255,0.96); color:#222; border-radius:22px; padding:24px; box-shadow:0 12px 35px rgba(0,0,0,0.25); z-index:20; opacity:0; pointer-events:none; transition: all 0.45s ease; overflow-y:auto; max-height:250px; }
+.message-card.show { opacity:1; pointer-events:auto; transform:translateX(-50%) translateY(0); }
+.message-title { color:#b8002a; font-size:1.35rem; margin-bottom:10px; }
+.message-text { font-size:1.1rem; line-height:1.7; min-height:3.2rem; white-space:pre-wrap; }
 
 /* =======================================================================
    FLOATING WHITE HEARTS
 ======================================================================= */
-.floating-heart {
-  position: fixed;
-  pointer-events: none;
-  z-index: 12;
-  font-size: 22px;
-  color: white;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
-  animation: floatUp linear forwards;
-  user-select: none;
-}
-
-@keyframes floatUp {
-  from {
-    transform: translateY(0) scale(0.8);
-    opacity: 1;
-  }
-  to {
-    transform: translateY(-220px) scale(1.5);
-    opacity: 0;
-  }
-}
+.floating-heart { position:fixed; pointer-events:none; z-index:12; font-size:22px; color:white; text-shadow:0 0 10px rgba(255,255,255,0.7); animation:floatUp linear forwards; user-select:none; }
+@keyframes floatUp { from{transform:translateY(0) scale(0.8);opacity:1;} to{transform:translateY(-220px) scale(1.5);opacity:0;} }
 
 /* =======================================================================
-   RESPONSIVE MOBILE FIXES
+   EXTRA FLAIR
 ======================================================================= */
+.spark { position:absolute; width:6px; height:6px; border-radius:50%; background:white; pointer-events:none; }
+
+/* ===============================
+   MOBILE RESPONSIVENESS
+=============================== */
 @media (max-width: 600px) {
-  .card {
-    padding: 26px 18px;
-    border-radius: 20px;
-  }
-
-  .title {
-    font-size: 1.45rem;
-  }
-
-  .subtitle {
-    font-size: 0.92rem;
-  }
-
-  input {
-    font-size: 1rem;
-    padding: 14px 15px;
-  }
-
-  .btn {
-    font-size: 1rem;
-    padding: 14px 16px;
-  }
-
-  .typing-wrap {
-    width: 92vw;
-    max-height: 34vh;
-  }
-
-  .typing-wrap.move-up {
-    top: 8vh;
-    max-height: 28vh;
-  }
-
-  .typing-text {
-    font-size: 1.05rem;
-    line-height: 1.45;
-  }
-
-  .choices {
-    gap: 14px;
-  }
-
-  .heart-choice.circle {
-    width: 72px;
-    height: 72px;
-    font-size: 2.45rem;
-  }
-
-  .heart-choice.square {
-    width: 92px;
-    height: 92px;
-    font-size: 3rem;
-  }
-
-  .message-card {
-    bottom: 12px;
-    max-height: 30vh;
-    padding: 18px;
-  }
-
-  .message-title {
-    font-size: 1.15rem;
-  }
-
-  .message-text {
-    font-size: 0.98rem;
-    line-height: 1.55;
-  }
+  .card { width: 90%; padding: 25px; }
+  .title { font-size: 1.6rem; }
+  .subtitle { font-size: 0.9rem; }
+  input { font-size: 1rem; padding: 12px 14px; }
+  .btn { font-size: 1rem; padding: 14px; }
+  .heart-choice { font-size: 70px; max-height:200px; overflow-y:auto; }
+  .message-card { width:90%; bottom:15px; max-height:220px; }
+  .typing-wrap { width:90%; font-size:clamp(1rem,2.2vw,1.6rem); }
 }
 </style>
 </head>
-
 <body>
   <!-- BACKGROUND MUSIC -->
   <audio id="bgMusic" src="a-sky-full-of-stars-piano-cover (1).mp3" loop></audio>
@@ -395,6 +96,7 @@ input:focus {
       <div class="title">Social Habits and Peer Feedback Questionnaire</div>
       <input type="text" id="nameInput" placeholder="Please enter your name here..." />
       <button class="btn" id="nextBtn">Next</button>
+      <div class="subtitle"></div>
       <div class="subtitle">Any information you provide will be held in utmost confidentiality.</div>
     </div>
   </div>
@@ -427,86 +129,59 @@ const bgMusic = document.getElementById("bgMusic");
 
 let floatingInterval = null;
 let spawnRate = 120;
-let typingTimer = null;
 
 // --- HEARTS DATA
 const heartsData = [
-  {
-    label: "❤",
-    type: "circle",
-    title: "I",
-    message: "Hello po, sana nagustuhan n’yo yung simpleng pakulo ko ngayon. ..."
-  },
-  {
-    label: "❤",
-    type: "square",
-    title: "APPLICATION RESUME",
-    message: "Name: Francis De La Torre\nPosition Applied For: Potential Boyfriend..."
-  },
-  {
-    label: "❤",
-    type: "circle",
-    title: "U",
-    message: "Medyo natatakot po ako na baka mali ang timing ko..."
-  }
+  {label:"❤", type:"circle", title:"I", message:"Hello po, sana nagustuhan n’yo yung simpleng pakulo ko ngayon. ..."},
+  {label:"❤", type:"square", title:"APPLICATION RESUME ", message:"Name: Francis De La Torre\nPosition Applied For: Potential Boyfriend..."},
+  {label:"❤", type:"circle", title:"U", message:"Medyo natatakot po ako na baka mali ang timing ko..."}
 ];
 
-function typeMessage(text, el, speed = 150, done) {
-  el.textContent = "";
-  el.scrollTop = 0;
+let typingTimer;
 
-  let i = 0;
+function typeMessage(text, el, speed=150, done){
+  el.textContent="";
+  let i=0;
   clearInterval(typingTimer);
-
-  typingTimer = setInterval(() => {
-    const char = text[i];
-
-    if (char !== undefined) {
-      el.textContent += char;
-      el.scrollTop = el.scrollHeight;
-    }
-
-    i++;
-
-    if (i >= text.length) {
-      clearInterval(typingTimer);
-      if (done) done();
-    }
+  typingTimer=setInterval(()=>{
+    el.textContent+=text[i]; i++;
+    if(i>=text.length){ clearInterval(typingTimer); if(done) done(); }
   }, speed);
 }
 
-function showTypingSequence() {
+function showTypingSequence(){
   document.body.classList.add("red-mode");
   startScreen.classList.add("hidden");
   typingWrap.classList.add("show");
-
-  typeMessage(
-    "Hello po...\nSorry po sa scam hehehe\nwala po talagang survey...\nnaisip ko lang pong mag gawa po ng site\nkasi nahihiya po ako hahaha\nuhm...\nSo...\nPili lang po kayo sa tatlo...",
-    typingText,
-    70,
-    () => {
-      setTimeout(() => {
-        typingWrap.classList.add("move-up");
-        setTimeout(showHearts, 600);
-      }, 700);
-    }
-  );
+  typeMessage("Hello po...\n Sorry po sa scam hehehe \n wala po talagang survey... \n naisip ko lang pong mag gawa po ng site \n kasi nahihiya po ako hahaha \n uhm... \n So... \n Pili lang po kayo sa tatlo...", typingText, 70, ()=>{
+    setTimeout(()=>{
+      typingWrap.style.transition="transform 0.7s ease";
+      typingWrap.style.transform="translate(-50%, -60%)"; // move up for hearts
+      setTimeout(showHearts, 700);
+    }, 700);
+  });
 }
 
-function showHearts() {
+function showHearts(){
   choicesLayer.classList.remove("hidden");
-  choicesLayer.innerHTML = "";
+  choicesLayer.innerHTML="";
+  const viewportW = window.innerWidth;
+  const viewportH = window.innerHeight;
 
-  heartsData.forEach((item) => {
+  const spacing = Math.min(160, viewportW / (heartsData.length + 1));
+
+  heartsData.forEach((item,index)=>{
     const heart = document.createElement("button");
-    heart.className = `heart-choice ${item.type}`;
-    heart.type = "button";
-    heart.innerHTML = item.label;
-    heart.title = item.title;
+    heart.className="heart-choice "+item.type;
+    heart.innerHTML=item.label;
+    heart.title=item.title;
 
-    setTimeout(() => heart.classList.add("show"), 50);
+    heart.style.left = `${viewportW/2 - spacing*(heartsData.length-1)/2 + index*spacing}px`;
+    heart.style.top = `${viewportH/2}px`;
 
-    heart.addEventListener("click", () => {
+    setTimeout(()=>heart.classList.add("show"),50);
+
+    heart.addEventListener("click",()=>{
       heart.classList.add("clicked");
       spawnWhiteHeartsContinuously();
       spawnRate = Math.max(100, spawnRate - 20);
@@ -517,41 +192,38 @@ function showHearts() {
   });
 }
 
-function showConfession(title, message) {
-  messageTitle.textContent = title;
+function showConfession(title,message){
+  messageTitle.textContent=title;
   messageCard.classList.add("show");
-  typeMessage(message, messageText, 35);
+  messageText.style.overflowY="auto";
+  messageText.style.maxHeight="200px";
+  typeMessage(message,messageText,35);
 }
 
-function spawnWhiteHeartsContinuously() {
-  if (floatingInterval) return;
-
-  floatingInterval = setInterval(() => {
-    const h = document.createElement("div");
-    h.className = "floating-heart";
-    h.textContent = Math.random() > 0.5 ? "❤" : "♡";
-    h.style.left = `${Math.random() * window.innerWidth}px`;
-    h.style.top = `${Math.random() * window.innerHeight}px`;
-    h.style.fontSize = `${14 + Math.random() * 28}px`;
-    h.style.animationDuration = `${1.8 + Math.random() * 2}s`;
+function spawnWhiteHeartsContinuously(){
+  if(floatingInterval) return;
+  floatingInterval=setInterval(()=>{
+    const h=document.createElement("div");
+    h.className="floating-heart";
+    h.textContent=Math.random()>0.5?"❤":"♡";
+    h.style.left=`${Math.random()*window.innerWidth}px`;
+    h.style.top=`${Math.random()*window.innerHeight}px`;
+    h.style.fontSize=`${14+Math.random()*28}px`;
+    h.style.animationDuration=`${1.8+Math.random()*2}s`;
     document.body.appendChild(h);
-    setTimeout(() => h.remove(), 4000);
+    setTimeout(()=>h.remove(),4000);
   }, spawnRate);
 }
 
-nextBtn.addEventListener("click", () => {
-  const name = nameInput.value.trim();
-  if (!name) {
-    nameInput.focus();
-    return;
-  }
-
+nextBtn.addEventListener("click",()=>{
+  const name=nameInput.value.trim();
+  if(!name){ nameInput.focus(); return; }
   bgMusic.play().catch(err => console.log("Autoplay blocked:", err));
   showTypingSequence();
 });
 
-nameInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") nextBtn.click();
+nameInput.addEventListener("keydown",(e)=>{
+  if(e.key==="Enter") nextBtn.click();
 });
 </script>
 </body>
