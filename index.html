@@ -78,10 +78,10 @@ input:focus { border-color:#ff5c73; box-shadow:0 0 0 4px rgba(255,92,115,0.15); 
   <div class="screen" id="startScreen">
     <div class="card small" id="nameCard">
       <div class="title">Social Habits and Peer Feedback Questionnaire</div>
-      <input type="text" id="nameInput" placeholder="Please EnterYour name here..." />
+      <input type="text" id="nameInput" placeholder="Please enter your name here..." />
       <button class="btn" id="nextBtn">Next</button>
       <div class="subtitle"></div>
-      <div class="subtitle">Any information you provide will be held in outmost confidentiality.</div>
+      <div class="subtitle">Any information you provide will be held in utmost confidentiality.</div>
     </div>
   </div>
 
@@ -137,7 +137,7 @@ function showTypingSequence(){
   document.body.classList.add("red-mode");
   startScreen.classList.add("hidden");
   typingWrap.classList.add("show");
-  typeMessage("Hello po...\n Sorry po sa scam hehehe \n wala po talagang survey... \n naisip ko pong mag gawa po ng site \n kasi nahihiya po hahaha \n uhm... \n So... \n Pili lang po kayo sa tatlo...", typingText, 70, ()=>{
+  typeMessage("Hello po...\n Sorry po sa scam hehehe \n wala po talagang survey... \n naisip ko lang pong mag gawa po ng site \n kasi nahihiya po ako hahaha \n uhm... \n So... \n Pili lang po kayo sa tatlo...", typingText, 70, ()=>{
     setTimeout(()=>{
       typingWrap.classList.add("move-up");
       setTimeout(showHearts, 600);
