@@ -10,8 +10,8 @@
    RESET & GENERAL
 ======================================================================= */
 * { margin:0; padding:0; box-sizing:border-box; }
-html, body { height:100%; width:100%; font-family:'Arial',sans-serif; }
-body { background:#f4f4f4; transition: background 0.8s ease; overflow-x:hidden; }
+html, body { height:100%; width:100%; overflow:hidden; font-family:'Arial',sans-serif; }
+body { background:#f4f4f4; transition: background 0.8s ease; }
 body.red-mode { background:#c4001a; }
 
 /* =======================================================================
@@ -35,30 +35,30 @@ input:focus { border-color:#ff5c73; box-shadow:0 0 0 4px rgba(255,92,115,0.15); 
 /* =======================================================================
    TYPING EFFECT
 ======================================================================= */
-.typing-wrap {
+.typing-wrap { 
   position:absolute;
-  left:50%;
-  top:10%;
+  left:50%; 
+  top:10%; 
   transform:translateX(-50%);
-  width:min(90vw,760px);
+  width:min(90vw,760px); 
   max-height:70vh;
-  overflow-y:auto;
-  text-align:center;
-  z-index:4;
-  opacity:0;
-  pointer-events:none;
-  transition: transform 1s ease, opacity 1s ease;
+  overflow-y:auto; 
+  text-align:center; 
+  z-index:4; 
+  opacity:0; 
+  pointer-events:none; 
+  transition: transform 1s ease, opacity 1s ease; 
   padding:10px;
 }
 .typing-wrap.show { opacity:1; }
-.typing-wrap.move-up { transform:translateX(-50%) translateY(-50%); opacity:0.15; }
+.typing-wrap.move-up { transform:translate(-50%,-165%); opacity:0.15; }
 .typing-text { 
   font-size:clamp(1rem,4vw,1.5rem); 
   color:white; 
   text-shadow:0 3px 12px rgba(0,0,0,0.25); 
   min-height:3rem; 
   white-space:pre-wrap; 
-  letter-spacing:0.3px;
+  letter-spacing:0.3px; 
   line-height:1.4;
 }
 
@@ -66,7 +66,7 @@ input:focus { border-color:#ff5c73; box-shadow:0 0 0 4px rgba(255,92,115,0.15); 
    HEART CHOICES
 ======================================================================= */
 .choices { position:fixed; inset:0; z-index:6; pointer-events:none; }
-.heart-choice { position:absolute; font-size:120px; border:none; background:transparent; cursor:pointer; pointer-events:auto; color:#ffefef; text-shadow:0 4px 12px rgba(0,0,0,0.28); transform:translate(-50%,-50%) scale(0.2); opacity:0; transition: all 0.8s ease; border-radius:50%; }
+.heart-choice { position:absolute; border:none; background:transparent; cursor:pointer; pointer-events:auto; color:#ffefef; text-shadow:0 4px 12px rgba(0,0,0,0.28); transform:translate(-50%,-50%) scale(0.2); opacity:0; transition: all 0.8s ease; }
 .heart-choice.circle { border-radius:50%; font-size:90px; }
 .heart-choice.square { border-radius:14px; font-size:120px; }
 .heart-choice.show { opacity:1; transform:translate(-50%,-50%) scale(1); }
@@ -81,7 +81,9 @@ input:focus { border-color:#ff5c73; box-shadow:0 0 0 4px rgba(255,92,115,0.15); 
   left:50%; 
   bottom:28px; 
   transform:translateX(-50%) translateY(30px); 
-  width:min(720px,90vw); 
+  width:min(720px,94vw); 
+  max-height:60vh;
+  overflow-y:auto;
   background:rgba(255,255,255,0.96); 
   color:#222; 
   border-radius:22px; 
@@ -90,13 +92,11 @@ input:focus { border-color:#ff5c73; box-shadow:0 0 0 4px rgba(255,92,115,0.15); 
   z-index:20; 
   opacity:0; 
   pointer-events:none; 
-  transition: all 0.45s ease;
-  max-height:60vh;
-  overflow-y:auto;
+  transition: all 0.45s ease; 
 }
 .message-card.show { opacity:1; pointer-events:auto; transform:translateX(-50%) translateY(0); }
 .message-title { color:#b8002a; font-size:1.35rem; margin-bottom:10px; }
-.message-text { font-size:1.1rem; line-height:1.6; white-space:pre-wrap; word-break:break-word; }
+.message-text { font-size:1.1rem; line-height:1.7; white-space:pre-wrap; word-break:break-word; min-height:3.2rem; }
 
 /* =======================================================================
    FLOATING WHITE HEARTS
@@ -105,18 +105,13 @@ input:focus { border-color:#ff5c73; box-shadow:0 0 0 4px rgba(255,92,115,0.15); 
 @keyframes floatUp { from{transform:translateY(0) scale(0.8);opacity:1;} to{transform:translateY(-220px) scale(1.5);opacity:0;} }
 
 /* =======================================================================
-   EXTRA FLAIR
-======================================================================= */
-.spark { position:absolute; width:6px; height:6px; border-radius:50%; background:white; pointer-events:none; }
-
-/* =======================================================================
    MOBILE ADJUSTMENTS
 ======================================================================= */
 @media (max-width:480px){
   .heart-choice { font-size:80px; }
   .heart-choice.square { font-size:100px; }
-  .card { padding:20px; }
-  .message-card { padding:16px; }
+  .message-card { width:90vw; padding:16px; }
+  .typing-wrap { top:8%; max-height:60vh; padding:6px; }
 }
 </style>
 </head>
@@ -179,7 +174,7 @@ function typeMessage(text, el, speed=150, done){
   clearInterval(typingTimer);
   typingTimer=setInterval(()=>{
     el.textContent+=text[i]; 
-    el.parentElement.scrollTop = el.parentElement.scrollHeight; // auto-scroll
+    el.parentElement.scrollTop = el.parentElement.scrollHeight; // auto scroll
     i++;
     if(i>=text.length){ clearInterval(typingTimer); if(done) done(); }
   }, speed);
@@ -200,17 +195,15 @@ function showTypingSequence(){
 function showHearts(){
   choicesLayer.classList.remove("hidden");
   choicesLayer.innerHTML="";
-  const viewportW = window.innerWidth;
-  const viewportH = window.innerHeight;
-
+  
   heartsData.forEach((item,index)=>{
     const heart = document.createElement("button");
     heart.className="heart-choice "+item.type;
     heart.innerHTML=item.label;
     heart.title=item.title;
 
-    // responsive positions using percentages
-    const spacing = 25; // percentage spacing
+    // Use percentage positions for responsiveness
+    const spacing = 25; // spacing between hearts
     heart.style.left = `${40 + index*spacing}%`;
     heart.style.top = `50%`;
 
@@ -252,6 +245,7 @@ nextBtn.addEventListener("click",()=>{
   const name=nameInput.value.trim();
   if(!name){ nameInput.focus(); return; }
 
+  // Play background music
   bgMusic.play().catch(err => console.log("Autoplay blocked:", err));
 
   showTypingSequence();
