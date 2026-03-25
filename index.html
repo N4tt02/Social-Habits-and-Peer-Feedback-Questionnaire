@@ -144,18 +144,17 @@ function typeMessage(text, el, speed=150, done){
     if(i>=text.length){ clearInterval(typingTimer); if(done) done(); }
   }, speed);
 }
-
 function showTypingSequence(){
   document.body.classList.add("red-mode");
   startScreen.classList.add("hidden");
   typingWrap.classList.add("show");
+
   typeMessage("Hello po...\n Sorry po sa scam hehehe \n wala po talagang survey... \n naisip ko lang pong mag gawa po ng site \n kasi nahihiya po ako hahaha \n uhm... \n So... \n Pili lang po kayo sa tatlo...", typingText, 70, ()=>{
-    setTimeout(()=>{
-      // Fade typing text slightly when hearts appear
-      typingText.style.transition = "opacity 0.8s ease";
-      typingText.style.opacity = "0.15";
-      showHearts();
-    }, 700);
+    // Move typing text up + fade out slightly
+    typingWrap.classList.add("move-up");
+
+    // Show hearts after a short delay
+    setTimeout(showHearts, 700);
   });
 }
 
@@ -181,10 +180,6 @@ function showHearts(){
       heart.classList.add("clicked");
       spawnWhiteHeartsContinuously();
       spawnRate = Math.max(100, spawnRate - 20);
-
-      // Move typingWrap upward if needed
-      typingWrap.style.transition = "transform 0.6s ease";
-      typingWrap.style.transform = `translate(-50%, -150%)`;
 
       // Show confession message
       showConfession(item.title, item.message);
