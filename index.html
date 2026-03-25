@@ -25,17 +25,16 @@ input:focus { border-color:#ff5c73; box-shadow:0 0 0 4px rgba(255,92,115,0.15); 
 .btn:active { transform:scale(0.98); }
 .hidden { display:none !important; }
 
-/* TYPING CONTAINER ABOVE HEARTS */
+/* TYPING & MESSAGE CONTAINER */
 .typing-wrap { 
-  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-  width:min(90vw,760px); max-height:60vh; overflow-y:auto;
-  text-align:center; z-index:4; opacity:0; pointer-events:none; 
-  padding:10px; transition: top 1s ease, opacity 0.8s ease;
-  scrollbar-width: thin;
+  position:absolute; left:50%; top:8%; transform:translateX(-50%); 
+  width:min(90vw,760px); max-height:50vh; overflow-y:auto; text-align:center; 
+  z-index:4; opacity:0; pointer-events:none; transition: transform 1s ease, opacity 1s ease; padding:10px; scrollbar-width:thin;
+  background:rgba(0,0,0,0.2); border-radius:15px;
 }
 .typing-wrap.show { opacity:1; }
-.typing-wrap.above-hearts { top:20%; transform:translateX(-50%); }
-
+.typing-wrap.move-up { transform:translateX(-50%) translateY(-50%); opacity:0.15; }
+.typing-wrap.above-hearts { transform:translateX(-50%) translateY(-10%); opacity:1; } /* will move just above hearts */
 .typing-text { font-size:clamp(1rem,4vw,1.5rem); color:white; text-shadow:0 3px 12px rgba(0,0,0,0.25); white-space:pre-wrap; letter-spacing:0.3px; line-height:1.4; }
 
 /* HEART CHOICES */
@@ -50,7 +49,7 @@ input:focus { border-color:#ff5c73; box-shadow:0 0 0 4px rgba(255,92,115,0.15); 
 /* CONFESSION MESSAGE */
 .message-card { 
   position:fixed; left:50%; bottom:28px; transform:translateX(-50%) translateY(30px); 
-  width:min(720px,94vw); max-height:60vh; overflow-y:auto; 
+  width:min(720px,94vw); max-height:40vh; overflow-y:auto; 
   background:rgba(255,255,255,0.96); color:#222; border-radius:22px; padding:24px; 
   box-shadow:0 12px 35px rgba(0,0,0,0.25); z-index:20; opacity:0; pointer-events:none; transition: all 0.45s ease; 
 }
@@ -67,7 +66,7 @@ input:focus { border-color:#ff5c73; box-shadow:0 0 0 4px rgba(255,92,115,0.15); 
   .heart-choice { font-size:80px; }
   .heart-choice.square { font-size:100px; }
   .message-card { width:90vw; padding:16px; }
-  .typing-wrap { max-height:55vh; padding:6px; }
+  .typing-wrap { top:5%; max-height:50vh; padding:6px; }
   .choices { gap:20px; }
 }
 </style>
@@ -94,21 +93,21 @@ input:focus { border-color:#ff5c73; box-shadow:0 0 0 4px rgba(255,92,115,0.15); 
 </div>
 
 <script>
-const nameInput=document.getElementById("nameInput");
-const nextBtn=document.getElementById("nextBtn");
-const startScreen=document.getElementById("startScreen");
-const typingWrap=document.getElementById("typingWrap");
-const typingText=document.getElementById("typingText");
-const choicesLayer=document.getElementById("choicesLayer");
-const messageCard=document.getElementById("messageCard");
-const messageTitle=document.getElementById("messageTitle");
-const messageText=document.getElementById("messageText");
-const bgMusic=document.getElementById("bgMusic");
+const nameInput = document.getElementById("nameInput");
+const nextBtn = document.getElementById("nextBtn");
+const startScreen = document.getElementById("startScreen");
+const typingWrap = document.getElementById("typingWrap");
+const typingText = document.getElementById("typingText");
+const choicesLayer = document.getElementById("choicesLayer");
+const messageCard = document.getElementById("messageCard");
+const messageTitle = document.getElementById("messageTitle");
+const messageText = document.getElementById("messageText");
+const bgMusic = document.getElementById("bgMusic");
 
 let floatingInterval=null;
 let spawnRate=120;
 
-const heartsData=[
+const heartsData = [
   {label:"❤", type:"circle", title:"I", message:"Hello po, sana nagustuhan n’yo yung simpleng pakulo ko ngayon. ..."},
   {label:"❤", type:"square", title:"APPLICATION RESUME", message:"Name: Francis De La Torre\nPosition Applied For: Potential Boyfriend..."},
   {label:"❤", type:"circle", title:"U", message:"Medyo natatakot po ako na baka mali ang timing ko..."}
@@ -122,7 +121,7 @@ function typeMessage(text, el, speed=150, done){
   clearInterval(typingTimer);
   typingTimer=setInterval(()=>{
     el.textContent+=text[i];
-    el.parentElement.scrollTop = el.parentElement.scrollHeight; // scroll as it types
+    el.parentElement.scrollTo({top: el.parentElement.scrollHeight, behavior:'smooth'});
     i++;
     if(i>=text.length){ clearInterval(typingTimer); if(done) done(); }
   }, speed);
@@ -132,14 +131,9 @@ function showTypingSequence(){
   document.body.classList.add("red-mode");
   startScreen.classList.add("hidden");
   typingWrap.classList.add("show");
-  typeMessage(
-    "Hello po...\nSorry po sa scam hehehe\nwala po talagang survey...\nnaisip ko lang pong mag gawa po ng site\nkasi nahihiya po ako hahaha\nuhm...\nSo...\nPili lang po kayo sa tatlo...", 
-    typingText,70,
-    ()=>{
-      typingWrap.classList.add("above-hearts"); // move up above hearts
-      setTimeout(showHearts,600);
-    }
-  );
+  typeMessage("Hello po...\nSorry po sa scam hehehe\nwala po talagang survey...\nnaisip ko lang pong mag gawa po ng site\nkasi nahihiya po ako hahaha\nuhm...\nSo...\nPili lang po kayo sa tatlo...", typingText,70,()=>{
+    setTimeout(showHearts,700);
+  });
 }
 
 function showHearts(){
@@ -155,10 +149,16 @@ function showHearts(){
     heart.addEventListener("click",()=>{
       heart.classList.add("clicked");
       spawnWhiteHeartsContinuously();
-      spawnRate=Math.max(100,spawnRate-20);
+      spawnRate = Math.max(100, spawnRate - 20);
+      moveTypingAboveHearts();
       showConfession(item.title,item.message);
     });
   });
+}
+
+function moveTypingAboveHearts(){
+  typingWrap.style.transition="transform 1s ease";
+  typingWrap.classList.add("above-hearts");
 }
 
 function showConfession(title,message){
