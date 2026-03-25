@@ -1,1 +1,1 @@
-qwerweg
+This questionnaire aims to gather information on students’ social habits, preferences, and experiences when interacting with their peers. The results will help educators and activity coordinators better understand social dynamics and student engagement within the school community. Your responses will remain confidential and will be used solely for research and feedback purposes. Please answer all questions honestly and to the best of your ability.
