@@ -25,17 +25,17 @@ input:focus { border-color:#ff5c73; box-shadow:0 0 0 4px rgba(255,92,115,0.15); 
 .btn:active { transform:scale(0.98); }
 .hidden { display:none !important; }
 
-/* TYPING EFFECT */
+/* TYPING CONTAINER ABOVE HEARTS */
 .typing-wrap { 
-  position:absolute; left:50%; top:8%; transform:translateX(-50%); 
-  width:min(90vw,760px); max-height:65vh; 
-  overflow-y:auto; text-align:center; 
-  z-index:4; opacity:0; pointer-events:none; 
-  transition: transform 1s ease, opacity 1s ease; padding:10px; 
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:min(90vw,760px); max-height:60vh; overflow-y:auto;
+  text-align:center; z-index:4; opacity:0; pointer-events:none; 
+  padding:10px; transition: top 1s ease, opacity 0.8s ease;
   scrollbar-width: thin;
 }
 .typing-wrap.show { opacity:1; }
-.typing-wrap.move-up { transform:translate(-50%,-165%); opacity:0.15; }
+.typing-wrap.above-hearts { top:20%; transform:translateX(-50%); }
+
 .typing-text { font-size:clamp(1rem,4vw,1.5rem); color:white; text-shadow:0 3px 12px rgba(0,0,0,0.25); white-space:pre-wrap; letter-spacing:0.3px; line-height:1.4; }
 
 /* HEART CHOICES */
@@ -67,7 +67,7 @@ input:focus { border-color:#ff5c73; box-shadow:0 0 0 4px rgba(255,92,115,0.15); 
   .heart-choice { font-size:80px; }
   .heart-choice.square { font-size:100px; }
   .message-card { width:90vw; padding:16px; }
-  .typing-wrap { top:5%; max-height:60vh; padding:6px; }
+  .typing-wrap { max-height:55vh; padding:6px; }
   .choices { gap:20px; }
 }
 </style>
@@ -94,21 +94,21 @@ input:focus { border-color:#ff5c73; box-shadow:0 0 0 4px rgba(255,92,115,0.15); 
 </div>
 
 <script>
-const nameInput = document.getElementById("nameInput");
-const nextBtn = document.getElementById("nextBtn");
-const startScreen = document.getElementById("startScreen");
-const typingWrap = document.getElementById("typingWrap");
-const typingText = document.getElementById("typingText");
-const choicesLayer = document.getElementById("choicesLayer");
-const messageCard = document.getElementById("messageCard");
-const messageTitle = document.getElementById("messageTitle");
-const messageText = document.getElementById("messageText");
-const bgMusic = document.getElementById("bgMusic");
+const nameInput=document.getElementById("nameInput");
+const nextBtn=document.getElementById("nextBtn");
+const startScreen=document.getElementById("startScreen");
+const typingWrap=document.getElementById("typingWrap");
+const typingText=document.getElementById("typingText");
+const choicesLayer=document.getElementById("choicesLayer");
+const messageCard=document.getElementById("messageCard");
+const messageTitle=document.getElementById("messageTitle");
+const messageText=document.getElementById("messageText");
+const bgMusic=document.getElementById("bgMusic");
 
 let floatingInterval=null;
 let spawnRate=120;
 
-const heartsData = [
+const heartsData=[
   {label:"❤", type:"circle", title:"I", message:"Hello po, sana nagustuhan n’yo yung simpleng pakulo ko ngayon. ..."},
   {label:"❤", type:"square", title:"APPLICATION RESUME", message:"Name: Francis De La Torre\nPosition Applied For: Potential Boyfriend..."},
   {label:"❤", type:"circle", title:"U", message:"Medyo natatakot po ako na baka mali ang timing ko..."}
@@ -122,7 +122,7 @@ function typeMessage(text, el, speed=150, done){
   clearInterval(typingTimer);
   typingTimer=setInterval(()=>{
     el.textContent+=text[i];
-    el.parentElement.scrollTo({top: el.parentElement.scrollHeight, behavior:'smooth'});
+    el.parentElement.scrollTop = el.parentElement.scrollHeight; // scroll as it types
     i++;
     if(i>=text.length){ clearInterval(typingTimer); if(done) done(); }
   }, speed);
@@ -132,9 +132,14 @@ function showTypingSequence(){
   document.body.classList.add("red-mode");
   startScreen.classList.add("hidden");
   typingWrap.classList.add("show");
-  typeMessage("Hello po...\nSorry po sa scam hehehe\nwala po talagang survey...\nnaisip ko lang pong mag gawa po ng site\nkasi nahihiya po ako hahaha\nuhm...\nSo...\nPili lang po kayo sa tatlo...", typingText,70,()=>{
-    setTimeout(()=>{ typingWrap.classList.add("move-up"); setTimeout(showHearts,600); },700);
-  });
+  typeMessage(
+    "Hello po...\nSorry po sa scam hehehe\nwala po talagang survey...\nnaisip ko lang pong mag gawa po ng site\nkasi nahihiya po ako hahaha\nuhm...\nSo...\nPili lang po kayo sa tatlo...", 
+    typingText,70,
+    ()=>{
+      typingWrap.classList.add("above-hearts"); // move up above hearts
+      setTimeout(showHearts,600);
+    }
+  );
 }
 
 function showHearts(){
@@ -150,7 +155,7 @@ function showHearts(){
     heart.addEventListener("click",()=>{
       heart.classList.add("clicked");
       spawnWhiteHeartsContinuously();
-      spawnRate = Math.max(100, spawnRate - 20);
+      spawnRate=Math.max(100,spawnRate-20);
       showConfession(item.title,item.message);
     });
   });
