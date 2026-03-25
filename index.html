@@ -6,66 +6,40 @@
 <link rel="icon" type="image/png" href="Rose.png">
 <title>Social Habits and Peer Feedback Questionnaire</title>
 <style>
-/* =======================================================================
-   RESET & GENERAL
-======================================================================= */
+/* RESET & GENERAL */
 * { margin:0; padding:0; box-sizing:border-box; }
-html, body { height:100%; width:100%; font-family:'Arial',sans-serif; }
-body { background:#f4f4f4; transition: background 0.8s ease; overflow-x:hidden; }
+html, body { height:100%; width:100%; font-family:'Arial',sans-serif; overflow-x:hidden; }
+body { background:#f4f4f4; transition: background 0.8s ease; }
 body.red-mode { background:#c4001a; }
 
-/* =======================================================================
-   SCREEN & CARD
-======================================================================= */
+/* SCREEN & CARD */
 .screen { position:fixed; inset:0; display:flex; justify-content:center; align-items:center; }
 .card { background: rgba(255,255,255,0.97); border-radius:25px; box-shadow:0 12px 35px rgba(0,0,0,0.25); text-align:center; padding:40px; width:min(560px,90vw); transition: transform 1s ease, opacity 1s ease; }
 .card.small { min-height:220px; }
-
 .title { font-size:2rem; color:#222; margin-bottom:15px; }
 .subtitle { font-size:1rem; color:#555; margin-bottom:25px; }
 input { width:100%; padding:15px 18px; font-size:1.05rem; border:1.5px solid #ccc; border-radius:14px; margin-bottom:18px; outline:none; }
 input:focus { border-color:#ff5c73; box-shadow:0 0 0 4px rgba(255,92,115,0.15); }
-
 .btn { padding:16px 18px; width:100%; border:none; border-radius:14px; font-size:1.05rem; cursor:pointer; color:white; background:linear-gradient(135deg,#ff4d6d,#b8002a); transition:0.25s; }
 .btn:hover { filter:brightness(1.05); }
 .btn:active { transform:scale(0.98); }
-
 .hidden { display:none !important; }
 
-/* =======================================================================
-   TYPING EFFECT
-======================================================================= */
+/* TYPING EFFECT */
 .typing-wrap { 
-  position:absolute;
-  left:50%; 
-  top:8%; 
-  transform:translateX(-50%);
-  width:min(90vw,760px); 
-  max-height:65vh;
-  overflow-y:auto; 
-  text-align:center; 
-  z-index:4; 
-  opacity:0; 
-  pointer-events:none; 
-  transition: transform 1s ease, opacity 1s ease; 
-  padding:10px;
+  position:absolute; left:50%; top:8%; transform:translateX(-50%); 
+  width:min(90vw,760px); max-height:65vh; 
+  overflow-y:auto; text-align:center; 
+  z-index:4; opacity:0; pointer-events:none; 
+  transition: transform 1s ease, opacity 1s ease; padding:10px; 
+  scrollbar-width: thin;
 }
 .typing-wrap.show { opacity:1; }
 .typing-wrap.move-up { transform:translate(-50%,-165%); opacity:0.15; }
-.typing-text { 
-  font-size:clamp(1rem,4vw,1.5rem); 
-  color:white; 
-  text-shadow:0 3px 12px rgba(0,0,0,0.25); 
-  min-height:3rem; 
-  white-space:pre-wrap; 
-  letter-spacing:0.3px; 
-  line-height:1.4;
-}
+.typing-text { font-size:clamp(1rem,4vw,1.5rem); color:white; text-shadow:0 3px 12px rgba(0,0,0,0.25); white-space:pre-wrap; letter-spacing:0.3px; line-height:1.4; }
 
-/* =======================================================================
-   HEART CHOICES
-======================================================================= */
-.choices { position:fixed; inset:0; z-index:6; pointer-events:none; display:flex; justify-content:center; align-items:center; gap:40px; }
+/* HEART CHOICES */
+.choices { position:fixed; inset:0; display:flex; justify-content:center; align-items:center; gap:40px; z-index:6; pointer-events:none; }
 .heart-choice { border:none; background:transparent; cursor:pointer; pointer-events:auto; color:#ffefef; text-shadow:0 4px 12px rgba(0,0,0,0.28); transform:scale(0.2); opacity:0; transition: all 0.8s ease; }
 .heart-choice.circle { border-radius:50%; font-size:90px; }
 .heart-choice.square { border-radius:14px; font-size:120px; }
@@ -73,40 +47,22 @@ input:focus { border-color:#ff5c73; box-shadow:0 0 0 4px rgba(255,92,115,0.15); 
 .heart-choice.clicked { animation:pop 0.45s ease forwards; }
 @keyframes pop {0%{transform:scale(1);}50%{transform:scale(1.22);}100%{transform:scale(1);}}
 
-/* =======================================================================
-   CONFESSION MESSAGE
-======================================================================= */
+/* CONFESSION MESSAGE */
 .message-card { 
-  position:fixed; 
-  left:50%; 
-  bottom:28px; 
-  transform:translateX(-50%) translateY(30px); 
-  width:min(720px,94vw); 
-  max-height:60vh;
-  overflow-y:auto;
-  background:rgba(255,255,255,0.96); 
-  color:#222; 
-  border-radius:22px; 
-  padding:24px; 
-  box-shadow:0 12px 35px rgba(0,0,0,0.25); 
-  z-index:20; 
-  opacity:0; 
-  pointer-events:none; 
-  transition: all 0.45s ease; 
+  position:fixed; left:50%; bottom:28px; transform:translateX(-50%) translateY(30px); 
+  width:min(720px,94vw); max-height:60vh; overflow-y:auto; 
+  background:rgba(255,255,255,0.96); color:#222; border-radius:22px; padding:24px; 
+  box-shadow:0 12px 35px rgba(0,0,0,0.25); z-index:20; opacity:0; pointer-events:none; transition: all 0.45s ease; 
 }
 .message-card.show { opacity:1; pointer-events:auto; transform:translateX(-50%) translateY(0); }
 .message-title { color:#b8002a; font-size:1.35rem; margin-bottom:10px; }
 .message-text { font-size:1.1rem; line-height:1.7; white-space:pre-wrap; word-break:break-word; min-height:3.2rem; }
 
-/* =======================================================================
-   FLOATING WHITE HEARTS
-======================================================================= */
+/* FLOATING HEARTS */
 .floating-heart { position:fixed; pointer-events:none; z-index:12; font-size:22px; color:white; text-shadow:0 0 10px rgba(255,255,255,0.7); animation:floatUp linear forwards; user-select:none; }
 @keyframes floatUp { from{transform:translateY(0) scale(0.8);opacity:1;} to{transform:translateY(-220px) scale(1.5);opacity:0;} }
 
-/* =======================================================================
-   MOBILE ADJUSTMENTS
-======================================================================= */
+/* MOBILE ADJUSTMENTS */
 @media (max-width:480px){
   .heart-choice { font-size:80px; }
   .heart-choice.square { font-size:100px; }
@@ -117,33 +73,25 @@ input:focus { border-color:#ff5c73; box-shadow:0 0 0 4px rgba(255,92,115,0.15); 
 </style>
 </head>
 <body>
-  <!-- BACKGROUND MUSIC -->
-  <audio id="bgMusic" src="a-sky-full-of-stars-piano-cover (1).mp3" loop></audio>
+<audio id="bgMusic" src="a-sky-full-of-stars-piano-cover (1).mp3" loop></audio>
 
-  <!-- NAME INPUT -->
-  <div class="screen" id="startScreen">
-    <div class="card small" id="nameCard">
-      <div class="title">Social Habits and Peer Feedback Questionnaire</div>
-      <input type="text" id="nameInput" placeholder="Please enter your name here..." />
-      <button class="btn" id="nextBtn">Next</button>
-      <div class="subtitle"></div>
-      <div class="subtitle">Any information you provide will be held in utmost confidentiality.</div>
-    </div>
+<div class="screen" id="startScreen">
+  <div class="card small" id="nameCard">
+    <div class="title">Social Habits and Peer Feedback Questionnaire</div>
+    <input type="text" id="nameInput" placeholder="Please enter your name here..." />
+    <button class="btn" id="nextBtn">Next</button>
+    <div class="subtitle"></div>
+    <div class="subtitle">Any information you provide will be held in utmost confidentiality.</div>
   </div>
+</div>
 
-  <!-- TYPING EFFECT -->
-  <div class="typing-wrap" id="typingWrap">
-    <div class="typing-text" id="typingText"></div>
-  </div>
+<div class="typing-wrap" id="typingWrap"><div class="typing-text" id="typingText"></div></div>
+<div class="choices hidden" id="choicesLayer"></div>
 
-  <!-- HEART CHOICES -->
-  <div class="choices hidden" id="choicesLayer"></div>
-
-  <!-- CONFESSION MESSAGE -->
-  <div class="message-card" id="messageCard">
-    <h3 class="message-title" id="messageTitle">Message</h3>
-    <p class="message-text" id="messageText"></p>
-  </div>
+<div class="message-card" id="messageCard">
+  <h3 class="message-title" id="messageTitle">Message</h3>
+  <p class="message-text" id="messageText"></p>
+</div>
 
 <script>
 const nameInput = document.getElementById("nameInput");
@@ -157,10 +105,9 @@ const messageTitle = document.getElementById("messageTitle");
 const messageText = document.getElementById("messageText");
 const bgMusic = document.getElementById("bgMusic");
 
-let floatingInterval = null;
-let spawnRate = 120;
+let floatingInterval=null;
+let spawnRate=120;
 
-// --- HEARTS DATA
 const heartsData = [
   {label:"❤", type:"circle", title:"I", message:"Hello po, sana nagustuhan n’yo yung simpleng pakulo ko ngayon. ..."},
   {label:"❤", type:"square", title:"APPLICATION RESUME", message:"Name: Francis De La Torre\nPosition Applied For: Potential Boyfriend..."},
@@ -174,8 +121,8 @@ function typeMessage(text, el, speed=150, done){
   let i=0;
   clearInterval(typingTimer);
   typingTimer=setInterval(()=>{
-    el.textContent+=text[i]; 
-    el.parentElement.scrollTop = el.parentElement.scrollHeight; // auto scroll
+    el.textContent+=text[i];
+    el.parentElement.scrollTo({top: el.parentElement.scrollHeight, behavior:'smooth'});
     i++;
     if(i>=text.length){ clearInterval(typingTimer); if(done) done(); }
   }, speed);
@@ -185,32 +132,26 @@ function showTypingSequence(){
   document.body.classList.add("red-mode");
   startScreen.classList.add("hidden");
   typingWrap.classList.add("show");
-  typeMessage("Hello po...\nSorry po sa scam hehehe \nwala po talagang survey... \nnaisip ko lang pong mag gawa po ng site \nkasi nahihiya po ako hahaha \nuhm... \nSo... \nPili lang po kayo sa tatlo...", typingText, 70, ()=>{
-    setTimeout(()=>{
-      typingWrap.classList.add("move-up");
-      setTimeout(showHearts, 600);
-    }, 700);
+  typeMessage("Hello po...\nSorry po sa scam hehehe\nwala po talagang survey...\nnaisip ko lang pong mag gawa po ng site\nkasi nahihiya po ako hahaha\nuhm...\nSo...\nPili lang po kayo sa tatlo...", typingText,70,()=>{
+    setTimeout(()=>{ typingWrap.classList.add("move-up"); setTimeout(showHearts,600); },700);
   });
 }
 
 function showHearts(){
   choicesLayer.classList.remove("hidden");
   choicesLayer.innerHTML="";
-  
-  heartsData.forEach((item)=>{
-    const heart = document.createElement("button");
+  heartsData.forEach(item=>{
+    const heart=document.createElement("button");
     heart.className="heart-choice "+item.type;
     heart.innerHTML=item.label;
     heart.title=item.title;
     choicesLayer.appendChild(heart);
-
     setTimeout(()=>heart.classList.add("show"),50);
-
     heart.addEventListener("click",()=>{
       heart.classList.add("clicked");
       spawnWhiteHeartsContinuously();
       spawnRate = Math.max(100, spawnRate - 20);
-      showConfession(item.title, item.message);
+      showConfession(item.title,item.message);
     });
   });
 }
@@ -233,21 +174,17 @@ function spawnWhiteHeartsContinuously(){
     h.style.animationDuration=`${1.8+Math.random()*2}s`;
     document.body.appendChild(h);
     setTimeout(()=>h.remove(),4000);
-  }, spawnRate);
+  },spawnRate);
 }
 
 nextBtn.addEventListener("click",()=>{
   const name=nameInput.value.trim();
   if(!name){ nameInput.focus(); return; }
-
-  bgMusic.play().catch(err => console.log("Autoplay blocked:", err));
-
+  bgMusic.play().catch(()=>{});
   showTypingSequence();
 });
 
-nameInput.addEventListener("keydown",(e)=>{
-  if(e.key==="Enter") nextBtn.click();
-});
+nameInput.addEventListener("keydown",(e)=>{ if(e.key==="Enter") nextBtn.click(); });
 </script>
 </body>
 </html>
